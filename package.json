@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/raprav/aguadulce-wordle/issues"
   },
-  "homepage": "https://github.com/raprav/aguadulce-wordle#readme"
+  "homepage": "https://github.com/raprav/aguadulce-wordle#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
