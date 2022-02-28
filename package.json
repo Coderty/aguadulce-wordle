@@ -1,0 +1,25 @@
+{
+  "name": "aguadulce-wordle",
+  "version": "1.0.0",
+  "description": "IES Aguadulce Wordle",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raprav/aguadulce-wordle.git"
+  },
+  "keywords": [
+    "nodejs",
+    "scalability",
+    "wordle"
+  ],
+  "author": "Coderty",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raprav/aguadulce-wordle/issues"
+  },
+  "homepage": "https://github.com/raprav/aguadulce-wordle#readme"
+}
