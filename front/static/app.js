@@ -56,7 +56,6 @@ function getWordleId() {
 function getDebugMode() {
   if (window.location.search) {
     var queries = window.location.search.split('?')[1].split('&');
-    console.log('queries', { queries, att: queries.indexOf('debug') });
     return queries.indexOf('debug') != -1;
   }
 }
@@ -114,7 +113,6 @@ async function iniGame(wordleId) {
       try {
         var data = await apiRequest('POST', wordleApiPath, formData);
 
-        console.log('data', data);
 
         var pokemon = data.headers.get('x-pokemon');
         if (!data.ok) {
@@ -135,7 +133,6 @@ async function iniGame(wordleId) {
 function processGameResponse(response) {
   wordleAttempts.push(response);
 
-  console.log(response);
 
   var div = document.createElement('div');
 
@@ -152,7 +149,6 @@ function processGameResponse(response) {
     )
     .join('');
 
-  console.log(wordleDebugMode);
 
   if (wordleDebugMode) {
     div.innerHTML =

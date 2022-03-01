@@ -10,20 +10,27 @@ services:
     restart: always
     ports:
       - "3306:3306"
+    networks:
+      - wordle-network
   api:
     container_name: wordle-api
     build: .
     env_file:
       - ./.env
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_HOST: db
-      MYSQL_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_ROOT_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
     ports:
       - "8080:8080"
+    networks:
+      - wordle-network
     depends_on:
       - db
     restart: on-failure
+
+networks:
+  wordle-network:

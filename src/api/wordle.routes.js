@@ -8,9 +8,18 @@ wordleRouter.use(bodyParser.json());
 wordleRouter.post('/', async (req, res) => {
   const word = String(req.body.word).toUpperCase();
 
-  const wordleId = await wordleDatabase.createWordle(word);
+  try {
+    const realWord = await wordleDatabase.checkIsRealWord(word);
+    if (realWord) {
+      const wordleId = await wordleDatabase.createWordle(word);
+      res.send({ wordleId });
+    } else {
+      throw Error(`${word} no existe en el diccionario`);
+    }
 
-  res.send({ wordleId });
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 wordleRouter.get('/:wordleId', async (req, res) => {
