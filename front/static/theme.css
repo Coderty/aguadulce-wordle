@@ -1,0 +1,183 @@
+html {
+  margin: 0;
+  height: 100%;
+  font-family: 'Blinker', sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ----- HEADER ----- */
+
+body header {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 30px;
+  background-color: #d9ffd6;
+}
+
+body header img {
+  display: block;
+  width: 150px;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* ----- MAIN ----- */
+
+body main {
+  display: block;
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+body main section h1 {
+  font-size: 30px;
+  margin: 0;
+}
+
+/* ----- SECTION HOME ----- */
+
+body main section#home form {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  font-size: 30px;
+  padding: 15px 0;
+  margin: 0 auto;
+  text-align: center;
+}
+
+body main section#home form h3 {
+  font-size: 20px;
+  margin: 0;
+  padding: 0 0 15px 0;
+}
+
+body main section#home form input[type='text'] {
+  margin: 0;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  padding: 15px;
+  background: #d9ffd6;
+}
+
+body main section#home form input[type='submit'] {
+  cursor: pointer;
+  padding: 15px;
+  font-size: 15px;
+  border: none;
+  color: white;
+  background-color: #6ca967;
+  margin: 15px 0 0 0;
+  border-radius: 10px;
+}
+
+/* ----- SECTION GAME ----- */
+
+body main section#game form {
+  max-width: 500px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  font-size: 30px;
+  padding: 15px 0;
+  margin: 0 auto;
+  text-align: center;
+}
+
+body main section#game form input[type='text'] {
+  width: 100%;
+  margin: 0;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  padding: 15px;
+  background-color: #d9ffd6;
+}
+
+body main section#game form input[type='submit'] {
+  cursor: pointer;
+  padding: 15px;
+  font-size: 15px;
+  border: none;
+  color: white;
+  background-color: #6ca967;
+  margin: 0 0 0 15px;
+  border-radius: 10px;
+}
+
+body main section#game #form-error-message {
+  color: red;
+}
+
+body main section#game #attempts {
+  padding: 15px;
+  color: #ffffff;
+  background-color: #121213;
+  text-align: center;
+  font-size: 30px;
+  margin: 15px 0 0 0;
+  border-radius: 10px;
+}
+
+body main section#game #attempts .attempt {
+  position: relative;
+  padding: 10px 0;
+}
+
+body main section#game #attempts .attempt > .pokemon {
+  position: absolute;
+  left: calc(100% + 30px);
+  top: 10px;
+  background-color: blue;
+  text-align: center;
+  box-sizing: border-box;
+  color: white;
+  border-radius: 10px;
+  font-size: 19px;
+  padding: 5px 10px;
+}
+
+body main section#game #attempts .attempt > span {
+  padding: 5px 15px;
+  margin: 0 5px;
+}
+
+body main section#game #results {
+  padding: 15px;
+  background-color: #d9ffd6;
+  text-align: center;
+  font-size: 30px;
+  border-radius: 15px;
+  margin: 15px 0 0 0;
+}
+
+body main section#game #results button {
+  margin: 10px 0 0 0;
+}
+
+/* ----- FOOTER ----- */
+
+body footer {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 15px;
+  font-size: 15px;
+  background-color: #d9ffd6;
+}

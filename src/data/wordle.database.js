@@ -17,7 +17,6 @@ async function createWordle(wordle) {
     uuid,
     wordle,
   ]);
-  pool.end();
   return uuid;
 }
 
@@ -30,7 +29,6 @@ async function getWordle(id) {
   console.log({ rows, fields });
   const response = rows[0]?.wordle;
   console.log({ response });
-  pool.end();
   return response;
 }
 
