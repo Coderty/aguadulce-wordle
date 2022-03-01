@@ -11,24 +11,32 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-async function createWordle(wordle) {
+async function createWordle(word) {
   const uuid = uuidv4();
   await pool.execute('INSERT INTO wordles (id, wordle) VALUES (?, ?)', [
     uuid,
-    wordle,
+    word,
   ]);
   return uuid;
 }
 
+async function checkIsRealWord(word) {
+  const uuid = uuidv4();
+  const [rows, fields] = await pool.execute(
+    'SELECT palabra FROM palabras WHERE palabra = ?',
+    [word]
+  );
+  const response = rows[0]?.wordle;
+  pool.end();
+  return response;
+}
+
 async function getWordle(id) {
-  console.log({ id });
   const [rows, fields] = await pool.execute(
     'SELECT wordle FROM wordles WHERE id = ? LIMIT 1',
     [id]
   );
-  console.log({ rows, fields });
   const response = rows[0]?.wordle;
-  console.log({ response });
   return response;
 }
 

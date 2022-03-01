@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const path = require('path');
 const wordleRouter = require('./api/wordle.routes');
@@ -20,5 +22,5 @@ app.use('**', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Wordle app listening on port ${port}`);
 });
