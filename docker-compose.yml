@@ -16,14 +16,14 @@ services:
     env_file:
       - ./.env
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_HOST: db
       MYSQL_PORT: ${DB_PORT}
     ports:
-      - "3000:3000"
+      - "8080:8080"
     depends_on:
       - db
     restart: on-failure

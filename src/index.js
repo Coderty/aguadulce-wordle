@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const wordleRouter = require('./api/wordle.routes');
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 8080;
 
 app.use(bodyParser.json());
 

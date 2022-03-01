@@ -1,4 +1,22 @@
+const wordleDatabase = require('../data/wordle.database');
+
 const wordleRouter = require('express')();
+
+wordleRouter.post('/', async (req, res) => {
+  const wordle = req.body.wordle;
+
+  const wordleId = await wordleDatabase.createWordle(wordle);
+
+  res.send({ wordleId });
+});
+
+wordleRouter.get('/:wordleId', async (req, res) => {
+  const wordleId = req.params.wordleId;
+
+  const wordle = await wordleDatabase.getWordle(wordleId);
+
+  res.send({ wordCount: wordle.length });
+});
 
 wordleRouter.post('/:wordleId', (req, res) => {
   const wordle = 'AGUADULCE';
