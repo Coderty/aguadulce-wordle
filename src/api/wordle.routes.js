@@ -8,7 +8,7 @@ wordleRouter.use(bodyParser.json());
 wordleRouter.post('/', async (req, res) => {
   const word = String(req.body.word).toUpperCase();
 
-  try {
+  /* try {
     const realWord = await wordleDatabase.checkIsRealWord(word);
     if (realWord) {
       const wordleId = await wordleDatabase.createWordle(word);
@@ -19,7 +19,9 @@ wordleRouter.post('/', async (req, res) => {
 
   } catch (err) {
     res.status(500).send(err);
-  }
+  } */
+  const wordleId = await wordleDatabase.createWordle(word);
+  res.send({ wordleId });
 });
 
 wordleRouter.get('/:wordleId', async (req, res) => {
