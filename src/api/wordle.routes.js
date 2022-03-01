@@ -3,9 +3,9 @@ const wordleDatabase = require('../data/wordle.database');
 const wordleRouter = require('express')();
 
 wordleRouter.post('/', async (req, res) => {
-  const wordle = req.body.wordle;
+  const word = req.body.word;
 
-  const wordleId = await wordleDatabase.createWordle(wordle);
+  const wordleId = await wordleDatabase.createWordle(word);
 
   res.send({ wordleId });
 });
@@ -18,8 +18,8 @@ wordleRouter.get('/:wordleId', async (req, res) => {
   res.send({ wordCount: wordle.length });
 });
 
-wordleRouter.post('/:wordleId', (req, res) => {
-  const wordle = 'AGUADULCE';
+wordleRouter.post('/:wordleId', async(req, res) => {
+  const wordle = await wordleDatabase.getWordle(wordleId);
 
   const word = req.body.word;
 
@@ -37,19 +37,24 @@ wordleRouter.post('/:wordleId', (req, res) => {
 });
 
 function solveWordle(wordle, word) {
-  const result = [];
+  const emojis = [];
 
+  let matches = 0;
   for (let i = 0; i < word.length; i++) {
     if (wordle[i] === word[i]) {
-      result.push('🟩');
+      emojis.push('🟩');
+      matches++;
     } else if (wordle.includes(word[i])) {
-      result.push('🟨');
+      emojis.push('🟨');
     } else {
-      result.push('⬜');
+      emojis.push('⬜');
     }
   }
 
-  return result;
+  return {
+    success: matches === wordle.length,
+    emojis
+  };
 }
 
 module.exports = wordleRouter;
