@@ -86,6 +86,10 @@ body main section#home form input[type='submit'] {
   border-radius: 10px;
 }
 
+body main section#game #home-form-error-message {
+  color: red;
+}
+
 /* ----- SECTION GAME ----- */
 
 body main section#game form {
@@ -120,7 +124,7 @@ body main section#game form input[type='submit'] {
   border-radius: 10px;
 }
 
-body main section#game #form-error-message {
+body main section#game #game-form-error-message {
   color: red;
 }
 

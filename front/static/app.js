@@ -65,21 +65,28 @@ function getDebugMode() {
 function initHome() {
   document
     .querySelector('form#create')
-    .addEventListener('submit', function (event) {
+    .addEventListener('submit', async function (event) {
       event.preventDefault();
+      document.querySelector('div#home-form-error-message').textContent = '';
 
-      var data = JSON.stringify(Object.fromEntries(new FormData(event.target)));
+      var formData = JSON.stringify(
+        Object.fromEntries(new FormData(event.target))
+      );
 
-      apiRequest('POST', '/', data)
-        .then(async function (data) {
-          if (!data.ok) Promise.reject();
+      try {
+        var data = await apiRequest('POST', '', formData);
+
+        if (!data.ok) {
+          throw await data.json();
+        } else {
           data = await data.json();
           const wordleId = data.wordleId;
           window.location.href = getGameUrl(wordleId);
-        })
-        .catch(function (error) {
-          alert(error);
-        });
+        }
+      } catch (error) {
+        document.querySelector('div#home-form-error-message').innerHTML =
+          error.error;
+      }
     });
 
   document.querySelector('section#home').style.display = 'block';
@@ -104,7 +111,7 @@ async function iniGame(wordleId) {
     .querySelector('form#play')
     .addEventListener('submit', async function (event) {
       event.preventDefault();
-      document.querySelector('div#form-error-message').textContent = '';
+      document.querySelector('div#game-form-error-message').textContent = '';
 
       var formData = JSON.stringify(
         Object.fromEntries(new FormData(event.target))
@@ -112,7 +119,6 @@ async function iniGame(wordleId) {
 
       try {
         var data = await apiRequest('POST', wordleApiPath, formData);
-
 
         var pokemon = data.headers.get('x-pokemon');
         if (!data.ok) {
@@ -122,7 +128,7 @@ async function iniGame(wordleId) {
           processGameResponse({ ...data, pokemon });
         }
       } catch (error) {
-        document.querySelector('div#form-error-message').innerHTML =
+        document.querySelector('div#game-form-error-message').innerHTML =
           error.error;
       }
     });
@@ -132,7 +138,6 @@ async function iniGame(wordleId) {
 
 function processGameResponse(response) {
   wordleAttempts.push(response);
-
 
   var div = document.createElement('div');
 
@@ -148,7 +153,6 @@ function processGameResponse(response) {
         '</span>'
     )
     .join('');
-
 
   if (wordleDebugMode) {
     div.innerHTML =
@@ -172,7 +176,8 @@ function endGame() {
     wordleAttempts
       .map((attempt) => attempt.emojis.map((emoji) => emoji.emoji).join(''))
       .join('\n') +
-    '\n\nhttps://wordle.coderty.ninja/';
+    '\n\n' +
+    window.location;
 
   document.querySelector('div#results').style.display = 'block';
 }
