@@ -112,7 +112,7 @@
 
         <form id="create">
           <h3>¡Crea tu propio Wordle!</h3>
-          <input type="text" name="word" required />
+          <input type="text" name="word" maxlength="5" style="text-transform:uppercase" required />
           <input type="submit" value="¡Quiero mi Wordle!" />
         </form>
 
@@ -129,7 +129,7 @@
         <div id="attempts"></div>
 
         <form id="play">
-          <input type="text" id="form-play-word" name="word" required />
+          <input type="text" id="form-play-word" name="word" maxlength="5" style="text-transform:uppercase" required />
           <input type="submit" value="Probar" />
         </form>
 
