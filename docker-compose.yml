@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  db:
+    container_name: wordle-db
+    build: ./db
+    environment:
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: wordle
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - wordle-network
+  api:
+    container_name: wordle-api
+    build: .
+    env_file:
+      - ./.env
+    environment:
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_ROOT_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+    ports:
+      - "8080:8080"
+    networks:
+      - wordle-network
+    depends_on:
+      - db
+    restart: on-failure
+
+networks:
+  wordle-network:

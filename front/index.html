@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:url" content="https://wordle.coderty.ninja" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coderty Wordle - Muy divertido</title>
+    <meta
+      name="description"
+      content="Crea tus propios wordles y compártelos a tus amigos."
+    />
+    <meta
+      name="viewport"
+      content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+    />
+    <link rel="stylesheet" href="static/theme.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Blinker:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="static/favicons/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="static/favicons/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="static/favicons/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="static/favicons/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="static/favicons/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="static/favicons/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="static/favicons/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="static/favicons/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="static/favicons/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="static/favicons/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="static/favicons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="static/favicons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="static/favicons/favicon-16x16.png"
+    />
+    <meta name="msapplication-TileColor" content="#6ca967" />
+    <meta
+      name="msapplication-TileImage"
+      content="static/favicons/ms-icon-144x144.png"
+    />
+    <meta name="theme-color" content="#6ca967" />
+  </head>
+
+  <body>
+    <header>
+      <a href="/">
+        <img src="static/logo.png" alt="Coderty" />
+      </a>
+    </header>
+
+    <main>
+      <section id="home" style="display: none">
+        <h1>¡Coderty Wordle!</h1>
+        <p>Muy divertido.</p>
+
+        <form id="create">
+          <h3>¡Crea tu propio Wordle!</h3>
+          <input type="text" name="word" required />
+          <input type="submit" value="¡Quiero mi Wordle!" />
+        </form>
+
+        <div id="home-form-error-message"></div>
+      </section>
+
+      <section id="game" style="display: none">
+        <h1>Palabra de <span id="word-count"></span> letras</h1>
+
+        <div>
+          <button onclick="window.wordleShareLink()">Copiar enlace</button>
+        </div>
+
+        <div id="attempts"></div>
+
+        <form id="play">
+          <input type="text" id="form-play-word" name="word" required />
+          <input type="submit" value="Probar" />
+        </form>
+
+        <div id="game-form-error-message"></div>
+
+        <div id="results" style="display: none">
+          <div><strong>¡Has ganado!</strong></div>
+
+          <div>🎉</div>
+
+          <div>
+            <button onclick="window.wordleCopyToClipboard()">
+              Copiar resultados
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>2022 · Una demo del equipo de Coderty - v1.0.0</footer>
+
+    <script src="static/app.js"></script>
+  </body>
+</html>

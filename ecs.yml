@@ -1,0 +1,326 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Subnet1ID:
+    Type: String
+    Default: subnet-007f71625a5c6cbd5
+  Subnet2ID:
+    Type: String
+    Default: subnet-08765cf555cebacb0
+  VPCID:
+    Type: String
+    Default: vpc-04e82f1c648b79ee5
+  DomainName:
+    Type: String
+    Default: coderty.ninja
+  SubDomainName:
+    Type: String
+    Default: wordle.coderty.ninja
+  HostedZoneId:
+    Type: String
+    Default: Z03150353GDUX6Y2RYUY6
+  ClusterName:
+    Type: String
+    Default: wordle-coderty-app
+  ServiceName:
+    Type: String
+    Default: wordle-coderty-service
+  LoadBalancerName:
+    Type: String
+    Default: wordle-coderty-alb
+  TargetGroupName:
+    Type: String
+    Default: wordle-coderty-tg
+  LogGroupName:
+    Type: String
+    Default: wordle-coderty-app-group
+  ClusterIAMRoleName:
+    Type: String
+    Default: wordle-coderty-app-role
+  ContainerName:
+    Type: String
+    Default: wordle-coderty-container
+  ContainerImage:
+    Type: String
+    Default: 108463552907.dkr.ecr.eu-west-1.amazonaws.com/wordle-coderty-app
+  ServiceASPolicyCPU:
+    Type: String
+    Default: wordle-coderty-app-svc-cpu
+  ServiceASPolicyMemory:
+    Type: String
+    Default: wordle-coderty-app-svc-memory
+  DbHost:
+    Type: String
+    Default: wordle.cdwk8lvlinbt.eu-west-1.rds.amazonaws.com
+  DbDatabase:
+    Type: String
+    Default: wordle
+  DbUser:
+    Type: String
+    Default: wordle
+  DbPasswordSecret:
+    Type: String
+    Default: arn:aws:secretsmanager:eu-west-1:108463552907:secret:prod/wordle-lx0qQN
+
+Resources:
+  ACMCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      SubjectAlternativeNames:
+        - !Sub '*.${DomainName}'
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref LogGroupName
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref ClusterIAMRoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyDocument:
+            Statement:
+              Action:
+                - rds:StopDBInstance
+                - rds:StartDBInstance
+                - rds:RebootDBInstance
+                - rds:ModifyDBInstance
+                - rds:ModifyDBCluster
+                - rds:Describe*
+                - secretsmanager:*
+              Effect: Allow
+              Resource: '*'
+          PolicyName: RDSAndSecretManagementExecution
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Statement:
+              Action:
+                - rds:StopDBInstance
+                - rds:StartDBInstance
+                - rds:RebootDBInstance
+                - rds:ModifyDBInstance
+                - rds:ModifyDBCluster
+                - rds:Describe*
+                - secretsmanager:*
+              Effect: Allow
+              Resource: '*'
+          PolicyName: RDSAndSecretManagement
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ContainerSecurityGroup
+      GroupDescription: Security group for container
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: wordle-coderty-task
+      Cpu: 256
+      Memory: 512
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !Ref ExecutionRole
+      TaskRoleArn: !Ref TaskRole
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref ContainerImage
+          PortMappings:
+            - ContainerPort: 8080
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs
+          Environment:
+            - Name: DB_HOST
+              Value: !Ref DbHost
+            - Name: DB_DATABASE
+              Value: !Ref DbDatabase
+            - Name: DB_USER
+              Value: !Ref DbUser
+          Secrets:
+            - Name: DB_PASSWORD
+              ValueFrom: !Ref DbPasswordSecret
+      RequiresCompatibilities:
+        - FARGATE
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn:
+      - HTTPSLoadBalancerListener
+      - HTTPlistener
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref TaskDefinition
+      DesiredCount: 2
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref Subnet1ID
+            - !Ref Subnet2ID
+          SecurityGroups:
+            - !GetAtt ContainerSecurityGroup.GroupId
+      LoadBalancers:
+        - TargetGroupArn: !Ref TargetGroup
+          ContainerPort: 8080
+          ContainerName: !Ref ContainerName
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: LoadBalancerSecurityGroup
+      GroupDescription: Security group for load balancer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Ref LoadBalancerName
+      Subnets:
+        - !Ref Subnet1ID
+        - !Ref Subnet2ID
+      SecurityGroups:
+        - !GetAtt LoadBalancerSecurityGroup.GroupId
+
+  HTTPlistener:
+   Type: "AWS::ElasticLoadBalancingV2::Listener"
+   Properties:
+     DefaultActions:
+       - Type: "redirect"
+         RedirectConfig:
+           Protocol: "HTTPS"
+           Port: 443
+           Host: "#{host}"
+           Path: "/#{path}"
+           Query: "#{query}"
+           StatusCode: "HTTP_301"
+     LoadBalancerArn: !Ref LoadBalancer
+     Port: 80
+     Protocol: "HTTP"
+
+  HTTPSLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: LoadBalancer
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      SslPolicy: "ELBSecurityPolicy-2016-08"
+      Certificates: 
+      - CertificateArn: !Ref ACMCertificate
+  
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: LoadBalancer
+    Properties:
+      TargetType: ip
+      Name: !Ref TargetGroupName
+      Port: 8080
+      Protocol: HTTP
+      VpcId: !Ref VPCID
+  
+  AppDomain:
+    Type: AWS::Route53::RecordSet
+    DependsOn: LoadBalancer
+    Properties:
+      HostedZoneName: !Sub "${DomainName}."
+      Name: !Sub "${SubDomainName}"
+      Type: CNAME
+      TTL: 60
+      ResourceRecords:
+        - !GetAtt LoadBalancer.DNSName
+
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole'
+
+  AutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 2
+      MaxCapacity: 4
+      ResourceId: !Sub
+      - 'service/${Cluster}/${Service}'
+      - Cluster: !Ref ClusterName
+        Service: !GetAtt 'Service.Name'
+      ScalableDimension: 'ecs:service:DesiredCount'
+      ServiceNamespace: ecs
+      RoleARN: !GetAtt AutoScalingRole.Arn
+
+  AppScalingPolicyCPU:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Ref ServiceASPolicyCPU
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: 10
+        ScaleOutCooldown: 10
+        TargetValue: 45.0
+
+  AppScalingPolicyMemory:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Ref ServiceASPolicyMemory
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref AutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageMemoryUtilization 
+        ScaleInCooldown: 10
+        ScaleOutCooldown: 10
+        TargetValue: 50.0
