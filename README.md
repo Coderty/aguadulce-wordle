@@ -15,7 +15,7 @@ Una implementación simplificada del [Wordle - Juego de palabras diario](https:/
 1. Clona el repo
 2. Prepara tu fichero .env (`cp .env.sample .env`)
 3. `docker-compose build`
-4. `docker-compose up -t`
+4. `docker-compose up -d`
 5. La aplicación estará disponible en http://localhost:8080
 
 ### Manual
