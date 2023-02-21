@@ -2,13 +2,13 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   Subnet1ID:
     Type: String
-    Default: subnet-007f71625a5c6cbd5
+    Default: subnet-0e029b3c7a62790a5
   Subnet2ID:
     Type: String
-    Default: subnet-08765cf555cebacb0
+    Default: subnet-05c9e20434459ba1d
   VPCID:
     Type: String
-    Default: vpc-04e82f1c648b79ee5
+    Default: vpc-07e828a9eaf11dfda
   DomainName:
     Type: String
     Default: coderty.ninja
@@ -17,7 +17,7 @@ Parameters:
     Default: wordle.coderty.ninja
   HostedZoneId:
     Type: String
-    Default: Z03150353GDUX6Y2RYUY6
+    Default: Z07941282UMOXNYOOLN8Y
   ClusterName:
     Type: String
     Default: wordle-coderty-app
@@ -41,25 +41,13 @@ Parameters:
     Default: wordle-coderty-container
   ContainerImage:
     Type: String
-    Default: 108463552907.dkr.ecr.eu-west-1.amazonaws.com/wordle-coderty-app
+    Default: 582795604416.dkr.ecr.eu-west-3.amazonaws.com/wordle-coderty-app
   ServiceASPolicyCPU:
     Type: String
     Default: wordle-coderty-app-svc-cpu
   ServiceASPolicyMemory:
     Type: String
     Default: wordle-coderty-app-svc-memory
-  DbHost:
-    Type: String
-    Default: wordle.cdwk8lvlinbt.eu-west-1.rds.amazonaws.com
-  DbDatabase:
-    Type: String
-    Default: wordle
-  DbUser:
-    Type: String
-    Default: wordle
-  DbPasswordSecret:
-    Type: String
-    Default: arn:aws:secretsmanager:eu-west-1:108463552907:secret:prod/wordle-lx0qQN
 
 Resources:
   ACMCertificate:
@@ -97,15 +85,10 @@ Resources:
         - PolicyDocument:
             Statement:
               Action:
-                - rds:StopDBInstance
-                - rds:StartDBInstance
-                - rds:RebootDBInstance
-                - rds:ModifyDBInstance
-                - rds:ModifyDBCluster
                 - rds:Describe*
                 - secretsmanager:*
               Effect: Allow
-              Resource: '*'
+              Resource: "*"
           PolicyName: RDSAndSecretManagementExecution
   TaskRole:
     Type: AWS::IAM::Role
@@ -126,10 +109,9 @@ Resources:
                 - rds:ModifyDBInstance
                 - rds:ModifyDBCluster
                 - rds:Describe*
-                - secretsmanager:*
               Effect: Allow
               Resource: '*'
-          PolicyName: RDSAndSecretManagement
+          PolicyName: RDSManagement
   ContainerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -166,14 +148,16 @@ Resources:
               awslogs-stream-prefix: ecs
           Environment:
             - Name: DB_HOST
-              Value: !Ref DbHost
+              Value: "wordle-db.cqsn1pptpfpw.eu-west-3.rds.amazonaws.com"
             - Name: DB_DATABASE
-              Value: !Ref DbDatabase
+              Value: "wordle"
             - Name: DB_USER
-              Value: !Ref DbUser
+              Value: "wordle_admon"
+            - Name: DB_PORT
+              Value: 3306
           Secrets:
             - Name: DB_PASSWORD
-              ValueFrom: !Ref DbPasswordSecret
+              ValueFrom: "arn:aws:secretsmanager:eu-west-3:582795604416:secret:prod/wordle-ZP4mM7:DB_PASSWORD::"
       RequiresCompatibilities:
         - FARGATE
   Service:
